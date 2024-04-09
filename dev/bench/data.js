@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1712670657615,
+  "lastUpdate": 1712698786225,
   "repoUrl": "https://github.com/blockiosaurus/mpl-core",
   "entries": {
     "Benchmark": [
@@ -57,6 +57,40 @@ window.BENCHMARK_DATA = {
           {
             "name": "create a new, empty asset",
             "value": 7413,
+            "unit": "Compute Units"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "committer": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "distinct": true,
+          "id": "cf0c026de6c6b3694c5f54538be2cc569fcb4acf",
+          "message": "Removing inclusion.",
+          "timestamp": "2024-04-09T17:35:44-04:00",
+          "tree_id": "9fb0001cd32810f646ae7479a519d145a16832bd",
+          "url": "https://github.com/blockiosaurus/mpl-core/commit/cf0c026de6c6b3694c5f54538be2cc569fcb4acf"
+        },
+        "date": 1712698785726,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "create a new, empty asset",
+            "value": 7404,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "create a new, empty asset with empty collection",
+            "value": 0,
             "unit": "Compute Units"
           }
         ]
