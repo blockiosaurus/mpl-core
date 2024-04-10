@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1712698786225,
+  "lastUpdate": 1712764876557,
   "repoUrl": "https://github.com/blockiosaurus/mpl-core",
   "entries": {
     "Benchmark": [
@@ -92,6 +92,50 @@ window.BENCHMARK_DATA = {
             "name": "create a new, empty asset with empty collection",
             "value": 0,
             "unit": "Compute Units"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "committer": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "distinct": true,
+          "id": "5493534708418c5511e2d5d75e2351d91d23d476",
+          "message": "Adding space graph.",
+          "timestamp": "2024-04-10T11:56:53-04:00",
+          "tree_id": "9489c6ea892b8dfbed43c92dbf8eba657f53b07b",
+          "url": "https://github.com/blockiosaurus/mpl-core/commit/5493534708418c5511e2d5d75e2351d91d23d476"
+        },
+        "date": 1712764876133,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "create a new, empty asset",
+            "value": 7404,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "create a new, empty asset",
+            "value": 91,
+            "unit": "Bytes"
+          },
+          {
+            "name": "create a new, empty asset with empty collection",
+            "value": 0,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "create a new, empty asset with empty collection",
+            "value": 0,
+            "unit": "Bytes"
           }
         ]
       }
