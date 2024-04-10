@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1712766924671,
+  "lastUpdate": 1712767627900,
   "repoUrl": "https://github.com/blockiosaurus/mpl-core",
   "entries": {
     "Benchmark": [
@@ -87,6 +87,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "Space: create a new, empty asset with empty collection",
             "value": 0,
+            "unit": "Bytes"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "committer": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "distinct": true,
+          "id": "11306b8ed79ff85ad5b8ffab2b94fd5ae6ba008b",
+          "message": "Fixing benchmark.",
+          "timestamp": "2024-04-10T12:43:17-04:00",
+          "tree_id": "f1136ef21fefcfc9f581a80dbd756c860e29c4f1",
+          "url": "https://github.com/blockiosaurus/mpl-core/commit/11306b8ed79ff85ad5b8ffab2b94fd5ae6ba008b"
+        },
+        "date": 1712767626748,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "CU: create a new, empty asset",
+            "value": 7404,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new, empty asset",
+            "value": 91,
+            "unit": "Bytes"
+          },
+          {
+            "name": "CU: create a new, empty asset with empty collection",
+            "value": 35154,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new, empty asset with empty collection",
+            "value": 91,
             "unit": "Bytes"
           }
         ]
