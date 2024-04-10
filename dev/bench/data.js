@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1712765338077,
+  "lastUpdate": 1712766924671,
   "repoUrl": "https://github.com/blockiosaurus/mpl-core",
   "entries": {
     "Benchmark": [
@@ -23,6 +23,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/blockiosaurus/mpl-core/commit/6f570ae889dfc7614ad18411920bb2db78a70eee"
         },
         "date": 1712765336842,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "CU: create a new, empty asset",
+            "value": 7404,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new, empty asset",
+            "value": 91,
+            "unit": "Bytes"
+          },
+          {
+            "name": "CU: create a new, empty asset with empty collection",
+            "value": 0,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new, empty asset with empty collection",
+            "value": 0,
+            "unit": "Bytes"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "committer": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "distinct": true,
+          "id": "65284283e37bb253cd43351be1697d4f54b563a9",
+          "message": "Merge remote-tracking branch 'upstream/main' into main",
+          "timestamp": "2024-04-10T12:29:12-04:00",
+          "tree_id": "24d45763edc76bf98233f11449883296c65eed6b",
+          "url": "https://github.com/blockiosaurus/mpl-core/commit/65284283e37bb253cd43351be1697d4f54b563a9"
+        },
+        "date": 1712766924332,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
