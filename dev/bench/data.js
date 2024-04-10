@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1712770996413,
+  "lastUpdate": 1712771744171,
   "repoUrl": "https://github.com/blockiosaurus/mpl-core",
   "entries": {
     "Benchmark": [
@@ -196,6 +196,90 @@ window.BENCHMARK_DATA = {
             "name": "Space: create a new, empty asset",
             "value": 91,
             "unit": "Bytes"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "committer": {
+            "email": "blockiosaurus@gmail.com",
+            "name": "blockiosaurus",
+            "username": "blockiosaurus"
+          },
+          "distinct": true,
+          "id": "de2110536e72686123b9f56efd08bef5fbab17dd",
+          "message": "Adding transfer benchmarks.",
+          "timestamp": "2024-04-10T13:51:40-04:00",
+          "tree_id": "35dec1537dd9c0d89e53eeb405a88639bec7b702",
+          "url": "https://github.com/blockiosaurus/mpl-core/commit/de2110536e72686123b9f56efd08bef5fbab17dd"
+        },
+        "date": 1712771743799,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "CU: create a new, empty asset with empty collection",
+            "value": 35193,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new, empty asset with empty collection",
+            "value": 91,
+            "unit": "Bytes"
+          },
+          {
+            "name": "CU: create a new asset with plugins and empty collection",
+            "value": 41967,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new asset with plugins and empty collection",
+            "value": 194,
+            "unit": "Bytes"
+          },
+          {
+            "name": "CU: create a new, empty asset",
+            "value": 7404,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new, empty asset",
+            "value": 91,
+            "unit": "Bytes"
+          },
+          {
+            "name": "CU: create a new asset with plugins",
+            "value": 36126,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "Space: create a new asset with plugins",
+            "value": 194,
+            "unit": "Bytes"
+          },
+          {
+            "name": "CU: transfer an asset with plugins and empty collection",
+            "value": 69889,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "CU: transfer an empty asset",
+            "value": 8704,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "CU: transfer an asset with plugins",
+            "value": 68783,
+            "unit": "Compute Units"
+          },
+          {
+            "name": "CU: transfer an empty asset with empty collection",
+            "value": 10995,
+            "unit": "Compute Units"
           }
         ]
       }
