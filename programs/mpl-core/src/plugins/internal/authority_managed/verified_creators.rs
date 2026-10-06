@@ -8,7 +8,7 @@ use crate::error::MplCoreError;
 use crate::plugins::{
     abstain, Plugin, PluginValidation, PluginValidationContext, ValidationResult,
 };
-use crate::state::DataBlob;
+use crate::state::{DataBlob, Key};
 
 /// The creator on an asset and whether or not they are verified.
 #[derive(Clone, BorshSerialize, BorshDeserialize, Debug, PartialEq, Eq, Hash)]
@@ -174,11 +174,26 @@ fn validate_verified_creators_as_plugin_authority(
     abstain!()
 }
 
+/// Returns true when this plugin lives on a collection but the lifecycle target is an asset
+/// (e.g. creating an asset in the collection, or adding a plugin to an asset in the collection).
+/// In that case the collection's signatures are not the data being created, so they must not be
+/// re-validated against the instruction signer: the signer would otherwise need to be the only
+/// verified creator on the collection.
+fn is_inherited_collection_check(ctx: &PluginValidationContext) -> bool {
+    ctx.self_key == Key::CollectionV1 && ctx.asset_info.is_some()
+}
+
 impl PluginValidation for VerifiedCreators {
     fn validate_create(
         &self,
         ctx: &PluginValidationContext,
     ) -> Result<ValidationResult, ProgramError> {
+        if is_inherited_collection_check(ctx) {
+            // The asset is being created in a collection that carries this plugin. Only the
+            // signatures on the asset itself (if any) are validated, via the asset's own plugin.
+            return abstain!();
+        }
+
         validate_verified_creators_as_plugin_authority(self, None, ctx.authority_info.key)
     }
 
@@ -188,6 +203,12 @@ impl PluginValidation for VerifiedCreators {
     ) -> Result<ValidationResult, ProgramError> {
         match ctx.target_plugin {
             Some(Plugin::VerifiedCreators(_verified_creators)) => {
+                if is_inherited_collection_check(ctx) {
+                    // A VerifiedCreators plugin is being added to an asset in a collection that
+                    // carries this plugin. The new plugin validates its own signatures.
+                    return abstain!();
+                }
+
                 validate_verified_creators_as_plugin_authority(self, None, ctx.authority_info.key)
             }
             _ => abstain!(),
@@ -227,6 +248,174 @@ impl PluginValidation for VerifiedCreators {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::state::Authority;
+    use solana_program::account_info::AccountInfo;
+
+    /// Builds a validation context for `plugin_key` (the account the plugin lives on) with an
+    /// optional asset as the lifecycle target, signed by `authority_info`.
+    fn validation_ctx<'a, 'b>(
+        plugin_key: Key,
+        asset_info: Option<&'a AccountInfo<'a>>,
+        collection_info: Option<&'a AccountInfo<'a>>,
+        self_authority: &'b Authority,
+        authority_info: &'a AccountInfo<'a>,
+    ) -> PluginValidationContext<'a, 'b> {
+        PluginValidationContext {
+            accounts: &[],
+            asset_info,
+            collection_info,
+            self_key: plugin_key,
+            self_authority,
+            authority_info,
+            resolved_authorities: None,
+            new_owner: None,
+            new_asset_authority: None,
+            new_collection_authority: None,
+            target_plugin: None,
+            target_plugin_authority: None,
+            target_external_plugin: None,
+            target_external_plugin_authority: None,
+        }
+    }
+
+    fn account_info<'a>(
+        key: &'a Pubkey,
+        lamports: &'a mut u64,
+        data: &'a mut [u8],
+        owner: &'a Pubkey,
+    ) -> AccountInfo<'a> {
+        AccountInfo::new(key, true, false, lamports, data, owner, false)
+    }
+
+    #[test]
+    fn test_collection_plugin_abstains_when_creating_asset_in_collection() {
+        // A verified creator on the collection that is not the signer.
+        let creator = Pubkey::new_unique();
+        let signer_key = Pubkey::new_unique();
+        let asset_key = Pubkey::new_unique();
+        let collection_key = Pubkey::new_unique();
+        let owner = crate::ID;
+
+        let plugin = VerifiedCreators {
+            signatures: vec![VerifiedCreatorsSignature {
+                address: creator,
+                verified: true,
+            }],
+        };
+
+        let mut signer_lamports = 0;
+        let mut signer_data = [];
+        let signer = account_info(&signer_key, &mut signer_lamports, &mut signer_data, &owner);
+        let mut asset_lamports = 0;
+        let mut asset_data = [];
+        let asset = account_info(&asset_key, &mut asset_lamports, &mut asset_data, &owner);
+        let mut collection_lamports = 0;
+        let mut collection_data = [];
+        let collection = account_info(
+            &collection_key,
+            &mut collection_lamports,
+            &mut collection_data,
+            &owner,
+        );
+        let self_authority = Authority::UpdateAuthority;
+
+        // Creating an asset in a collection carrying this plugin: the collection plugin
+        // must not re-validate its own signatures against the signer.
+        let ctx = validation_ctx(
+            Key::CollectionV1,
+            Some(&asset),
+            Some(&collection),
+            &self_authority,
+            &signer,
+        );
+        assert_eq!(plugin.validate_create(&ctx), Ok(ValidationResult::Pass));
+
+        // Adding a VerifiedCreators plugin to an asset in such a collection: same thing.
+        let target = Plugin::VerifiedCreators(VerifiedCreators { signatures: vec![] });
+        let mut ctx = validation_ctx(
+            Key::CollectionV1,
+            Some(&asset),
+            Some(&collection),
+            &self_authority,
+            &signer,
+        );
+        ctx.target_plugin = Some(&target);
+        assert_eq!(plugin.validate_add_plugin(&ctx), Ok(ValidationResult::Pass));
+    }
+
+    #[test]
+    fn test_self_check_still_requires_signer_for_verified_creators() {
+        let creator = Pubkey::new_unique();
+        let signer_key = Pubkey::new_unique();
+        let asset_key = Pubkey::new_unique();
+        let collection_key = Pubkey::new_unique();
+        let owner = crate::ID;
+
+        let plugin = VerifiedCreators {
+            signatures: vec![VerifiedCreatorsSignature {
+                address: creator,
+                verified: true,
+            }],
+        };
+
+        let mut signer_lamports = 0;
+        let mut signer_data = [];
+        let signer = account_info(&signer_key, &mut signer_lamports, &mut signer_data, &owner);
+        let mut asset_lamports = 0;
+        let mut asset_data = [];
+        let asset = account_info(&asset_key, &mut asset_lamports, &mut asset_data, &owner);
+        let mut collection_lamports = 0;
+        let mut collection_data = [];
+        let collection = account_info(
+            &collection_key,
+            &mut collection_lamports,
+            &mut collection_data,
+            &owner,
+        );
+        let self_authority = Authority::UpdateAuthority;
+
+        // Creating the collection itself with this plugin: the signer must be the creator.
+        let ctx = validation_ctx(
+            Key::CollectionV1,
+            None,
+            Some(&collection),
+            &self_authority,
+            &signer,
+        );
+        assert_eq!(
+            plugin.validate_create(&ctx),
+            Err(MplCoreError::MissingSigner.into())
+        );
+
+        // Creating an asset with this plugin on the asset itself: same requirement, whether
+        // or not the asset is in a collection.
+        let ctx = validation_ctx(
+            Key::AssetV1,
+            Some(&asset),
+            Some(&collection),
+            &self_authority,
+            &signer,
+        );
+        assert_eq!(
+            plugin.validate_create(&ctx),
+            Err(MplCoreError::MissingSigner.into())
+        );
+
+        // Adding this plugin to an asset: same requirement.
+        let target = Plugin::VerifiedCreators(plugin.clone());
+        let mut ctx = validation_ctx(
+            Key::AssetV1,
+            Some(&asset),
+            Some(&collection),
+            &self_authority,
+            &signer,
+        );
+        ctx.target_plugin = Some(&target);
+        assert_eq!(
+            plugin.validate_add_plugin(&ctx),
+            Err(MplCoreError::MissingSigner.into())
+        );
+    }
 
     #[test]
     fn test_verified_creators_signature_len() {
